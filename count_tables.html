@@ -1,0 +1,256 @@
+<!DOCTYPE HTML>
+<!--<html><head><title>About elks</title></head><body>The truth about elks.</body></html>-->
+
+<!--DOM - Document Object Model. it is used as the document object,  gives access to the page content. We can change or create anything on the page using it.-->
+
+<!-- 
+
+
+Interaction with console. select an element in Inspect and it can be accessed using $0 in console 
+
+All operations on the DOM start with the document object. 
+
+<head> = document.head
+<body> = document.body
+<html> = document.documentElement
+
+Child Nodes: (childNodes looks like an Array, but it is a collection. array methods like FILTER wont work, can loop over the collection using for .. of)
+
+    Child nodes (or children) – elements that are direct children
+
+    document.body.firstChild
+    document.body.childNodes[i]
+    document.body.lastChild
+    document.body.childNodes[elem.childNodes.length - 1]
+
+    can convert the collection to an array: Array.from(document.body.childNodes), then use filter Array.from(document.body.childNodes).filter
+
+    DOM collections are read-only, cant change them directly by assignment.
+    
+    document.body.parentNode
+    document.head.nextSibling 
+    document.head.previousSibling
+
+to get only elements, and not every node like text, comment, script nodes etc .. use only element only navigation
+    .children
+    .firstElementChild, lastElementChild
+    previousElementSibling, nextElementSibling
+    parentElement
+
+Table:
+    table.rows : coll of <tr>
+    table.caption/tHead/tFoot
+    table.tBodies : coll of <tbody>
+
+    tbody.rows, thead.rows, tfoot.rows
+
+    tr.cells : the collection of <td> and <th> inside a particular <tr>
+    tr.sectionRowIndex
+    tr.rowIndex
+    
+    td.cellIndex – the number of the cell inside the enclosing <tr>.
+
+Searching for elements:
+    document.getElementById or just id
+    alert(elem); // gets element with id = 'elem'
+    alert(window.elem) // global variable; elem with id='elem'
+    alert(window['elem'])
+    document.getElementById('elem');
+
+    document.getElementsByTagName('div'); // get all divs in the document ; returns a coll
+    document.getElementsByTagName('input')[0].value = 5;
+
+    document.querySelectorAll('ul > li:last-child'); // using css selector
+    
+    CSS pseudo-classes :hover, :active etc 
+    document.querySelectorAll(':hover') will return the collection with elements that the pointer is over now
+
+    elem.querySelector(css) // returns the first elem to match the css
+    this is similar to elem.querySelectorAll(css)[0]
+
+    querySelectorAll returns a static collection. It’s like a fixed array of elements.
+
+    elem.matches(css) returns true/false when it matches the css
+
+    elem.closest(css) looks the nearest ancestor that matches the CSS-selector
+    ancestors are: parent, the parent of parent, its parent and so on. i.e. all elements above the current element.
+    current elem is also returned in the search.
+    
+    location of the script tag is important. the above functions when it is inside script tag, it will look only at the elements above the said script tag.
+
+DOM node classes
+    .........................
+
+innerHTML
+    innerHTML property is only valid for element nodes.
+    innerHTML property allows to get the HTML inside the element as a string.
+    We can try to insert invalid HTML, the browser will fix our errors
+    E.g. document.body.innerHTML = '<b>test'; // forgot to close the tag
+
+    innerHTML += .... =>    content is “zeroed-out” and rewritten from the scratch, all images and other resources will be reloaded.
+
+outerHTML
+    innerHTML plus the element itself.
+    unlike innerHTML, writing to outerHTML does not change the element. Instead, it replaces it as a whole in the outer context.
+
+data property of text:
+    first child of body is just a text Hello
+    let text = document.body.firstChild;
+    alert(text.data); // Hello
+
+textContent
+    only text is returned, as if all <tags> were cut out, but the text in them remained.
+    <div id="news">
+      <h1>Headline!</h1>
+      <p>Martians attack people!</p>
+    </div>
+
+    <script>
+      // Headline! Martians attack people!
+      alert(news.textContent);
+    </script>
+
+hidden
+    elem.hidden = true;
+
+ore props
+    <input type="text" id="elem" value="value">
+    <script>
+      alert(elem.type); // "text"
+      alert(elem.id); // "elem"
+      alert(elem.value); // value   
+      alert(elem.href);
+    </script>
+
+append
+    node.append(...nodes or strings) – append nodes or strings at the end of node,
+    node.prepend(...nodes or strings) – insert nodes or strings into the beginning of node,
+    node.before(...nodes or strings) –- insert nodes or strings before the node,
+    node.after(...nodes or strings) –- insert nodes or strings after the node,
+    node.replaceWith(...nodes or strings) –- replaces node with the given nodes or strings.
+
+    document.body.appendChild(div); - Appends div as the last child of body.
+    parentElem.insertBefore(node, nextSibling) - Inserts node before nextSibling into parentElem.
+    parentElem.replaceChild(node, oldChild) - Replaces oldChild with node among children of parentElem.
+    
+    "beforebegin" – insert html before elem,
+    "afterbegin" – insert html into elem, at the beginning,
+    "beforeend" – insert html into elem, at the end,
+    "afterend" – insert html after elem
+    div.insertAdjacentHTML('beforebegin', '<p>Hello</p>'); // insert the html before the div.
+
+clone
+    elem.cloneNode(true) creates a “deep” clone of the element – with all attributes and subelements. 
+    if elem.cloneNode(false), then the clone is made without child elements.
+
+remove
+    parentElem.removeChild(node) - Removes node from parentElem (assuming it’s a child).
+    node.remove()
+
+call to document.write(html) writes the html into page “right here and now”.
+The call to document.write only works while the page is loading.
+
+Events 
+    To react on events we can assign a handler – a function that runs in case of an event
+
+    HTML attribute names are not case-sensitive, so ONCLICK works as well as onClick and onCLICK… But usually attributes are lowercased: onclick.
+    
+    DOM property on<event>.
+
+    <input type="button" onclick="countRabbits()" value="Count rabbits!"> (HTML-attribute)
+    
+    DOM property
+    <script>
+      elem.onclick = function() {
+        alert('Thank you');
+      };
+    </script>
+    
+    elem.onclick = sayThanks; // assign an existing function as a handler directly; no ()
+
+    The value of this inside a handler is the element. The one which has the handler on it.
+    <button onclick="alert(this.innerHTML)">Click me</button> // this refers to the button itself.
+
+    Don’t use setAttribute for handlers.
+    e.g. document.body.setAttribute('onclick', function() { alert(1) });
+
+    input.addEventListener("click", handler); // can assign multiple click events using this method.
+    input.removeEventListener("click", handler);
+
+Event object
+    elem.onclick = function(event) {
+        // show event type, element and coordinates of the click
+        alert(event.type + " at " + event.currentTarget);
+        alert("Coordinates: " + event.clientX + ":" + event.clientY);
+      };
+    event.type - here it’s "click".
+    event.currentTarget - Element that handled the event. That’s exactly the same as this
+    event.clientX / event.clientY Window-relative coordinates of the cursor, for mouse events.
+    
+    <input type="button" onclick="alert(event.type)" value="Event type"> // click
+
+Bubbling
+    
+    
+
+    
+
+-->
+
+<html>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(e){
+            var max = 0;
+            var count = 0;
+            
+            var tables = document.getElementsByTagName('table');
+            $(tables).each(function(i, table) {
+                count = 0;
+                rows = table.getElementsByTagName('tr');
+                $(rows).each(function(i, tr) {
+                    count += tr.getElementsByTagName('td').length;
+                });
+                if(count>max)
+                    max = count;
+            });
+            console.log(max)
+        });
+    </script>
+</head>
+<body>
+    <h3>Some test tables</h3>
+<div>
+<p>First table</p>
+    <table>
+        <tr>
+            <td>First</td>
+            <td>row</td>
+        </tr>
+        <tr>
+            <td>and</td>
+            <td>second</td>
+            <td>row</td>
+        </tr>
+        <tr>
+            <td>and</td>
+            <td>the</td>
+            <td>third</td>
+            <td>one</td>
+        </tr>
+    </table>
+</div>
+<p>Second table</p>
+<table>
+    <tr>
+        <td>Not</td>
+        <td>so</td>
+    </tr>
+    <tr>
+        <td>many</td>
+        <td>cells</td>
+    </tr>
+</table>
+</body>
+</html>
